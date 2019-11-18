@@ -37,3 +37,6 @@ Dans config de tomcat : deployement -> application context : mettre /
     + https://trainer-api-atr.herokuapp.com/
     + https://trainer-api-atr.herokuapp.com/trainers/
     + https://trainer-api-atr.herokuapp.com/trainers/Ash
+    + curl -X POST https://trainer-api-atr.herokuapp.com/trainers/ -H 'Content-type:application/json' -d '{"name": "Bug Catcher","team": [{"pokemonTypeId": 13, "level": 6},{"pokemonTypeId": 10, "level": 6}]}'
+    + curl -X PUT https://trainer-api-atr.herokuapp.com/trainers/Bug%20Catcher -H 'Content-type:application/json' -d '{"name": "Bug Catcher","team": [{"pokemonTypeId": 13, "level": 7},{"pokemonTypeId": 10, "level": 8}]}'
+    + curl -X DELETE https://trainer-api-atr.herokuapp.com/trainers/Bug%20Catcher
