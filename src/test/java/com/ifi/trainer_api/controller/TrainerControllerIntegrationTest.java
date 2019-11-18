@@ -6,6 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -40,9 +44,91 @@ class TrainerControllerIntegrationTest {
     void getAllTrainers_shouldReturnAshAndMisty() {
         var trainers = this.restTemplate.getForObject("http://localhost:" + port + "/trainers/", Trainer[].class);
         assertNotNull(trainers);
-        assertEquals(2, trainers.length);
 
-        assertEquals("Ash", trainers[0].getName());
-        assertEquals("Misty", trainers[1].getName());
+        var bugCatcher = this.restTemplate.getForObject("http://localhost:" + port + "/trainers/Bug Catcher", Trainer.class);
+        if (bugCatcher != null) {
+            assertEquals(3, trainers.length);
+            assertEquals("Ash", trainers[0].getName());
+            assertEquals("Bug Catcher", trainers[1].getName());
+            assertEquals("Misty", trainers[2].getName());
+        }
+        else {
+            assertEquals(2, trainers.length);
+            assertEquals("Ash", trainers[0].getName());
+            assertEquals("Misty", trainers[1].getName());
+        }
+
+
+    }
+
+    @Test
+    void createTrainer_shouldReturnBugCatcher() {
+        var oldBugCatcher = this.restTemplate.getForObject("http://localhost:" + port + "/trainers/Bug Catcher", Trainer.class);
+        assertNull(oldBugCatcher);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        String requestJson = "{\"name\": \"Bug Catcher\",\"team\": [{\"pokemonTypeId\": 13, \"level\": 6},{\"pokemonTypeId\": 10, \"level\": 6}]}";
+        HttpEntity<String> entity = new HttpEntity<String>(requestJson, headers);
+        var newTrainer = this.restTemplate.postForObject("http://localhost:" + port + "/trainers/", entity, Trainer.class);
+
+        var bugCatcher = this.restTemplate.getForObject("http://localhost:" + port + "/trainers/Bug Catcher", Trainer.class);
+        assertNotNull(bugCatcher);
+        assertEquals("Bug Catcher", bugCatcher.getName());
+        assertEquals(newTrainer.getName(), bugCatcher.getName());
+        assertEquals(newTrainer.getTeam().size(), bugCatcher.getTeam().size());
+        int i = 0;
+        while (i < bugCatcher.getTeam().size()) {
+            assertEquals(newTrainer.getTeam().get(i).getPokemonType(), bugCatcher.getTeam().get(i).getPokemonType());
+            assertEquals(newTrainer.getTeam().get(i).getLevel(), bugCatcher.getTeam().get(i).getLevel());
+            i++;
+        }
+    }
+
+    @Test
+    void replaceTrainer_shouldReplaceBugCatcher() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        String requestJson = "{\"name\": \"Bug Catcher\",\"team\": [{\"pokemonTypeId\": 13, \"level\": 6},{\"pokemonTypeId\": 10, \"level\": 6}]}";
+        HttpEntity<String> entity = new HttpEntity<String>(requestJson, headers);
+        this.restTemplate.postForObject("http://localhost:" + port + "/trainers/", entity, Trainer.class);
+
+        var oldBugCatcher = this.restTemplate.getForObject("http://localhost:" + port + "/trainers/Bug Catcher", Trainer.class);
+        assertNotNull(oldBugCatcher);
+        assertEquals("Bug Catcher", oldBugCatcher.getName());
+        assertEquals(2, oldBugCatcher.getTeam().size());
+        assertEquals(6, oldBugCatcher.getTeam().get(0).getLevel());
+        assertEquals(6, oldBugCatcher.getTeam().get(1).getLevel());
+
+        String requestJson2 = "{\"name\": \"Bug Catcher\",\"team\": [{\"pokemonTypeId\": 13, \"level\": 7},{\"pokemonTypeId\": 10, \"level\": 8}]}";
+        HttpEntity<String> entity2 = new HttpEntity<String>(requestJson2, headers);
+        this.restTemplate.put("http://localhost:" + port + "/trainers/Bug Catcher", entity2, Trainer.class);
+
+        var newBugCatcher = this.restTemplate.getForObject("http://localhost:" + port + "/trainers/Bug Catcher", Trainer.class);
+        assertNotNull(newBugCatcher);
+        assertEquals("Bug Catcher", newBugCatcher.getName());
+        assertEquals(2, newBugCatcher.getTeam().size());
+        assertEquals(7, newBugCatcher.getTeam().get(0).getLevel());
+        assertEquals(8, newBugCatcher.getTeam().get(1).getLevel());
+    }
+
+    @Test
+    void deleteTrainer_shouldReturnBugCatcher() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        String requestJson = "{\"name\": \"Bug Catcher\",\"team\": [{\"pokemonTypeId\": 13, \"level\": 6},{\"pokemonTypeId\": 10, \"level\": 6}]}";
+        HttpEntity<String> entity = new HttpEntity<String>(requestJson, headers);
+        this.restTemplate.postForObject("http://localhost:" + port + "/trainers/", entity, Trainer.class);
+
+        var oldBugCatcher = this.restTemplate.getForObject("http://localhost:" + port + "/trainers/Bug Catcher", Trainer.class);
+        assertNotNull(oldBugCatcher);
+        assertEquals("Bug Catcher", oldBugCatcher.getName());
+
+        this.restTemplate.delete("http://localhost:" + port + "/trainers/Bug Catcher", Trainer.class);
+
+        var bugCatcher = this.restTemplate.getForObject("http://localhost:" + port + "/trainers/Bug Catcher", Trainer.class);
+        assertNull(bugCatcher);
     }
 }

@@ -28,6 +28,11 @@ Dans config de tomcat : deployement -> application context : mettre /
     + http://localhost:8081/trainers/ 
     + http://localhost:8081/trainers/Ash
 
+- Sur terminal, pour tester POST/PUT/DELETE : 
+    + curl -X POST localhost:8081/trainers/ -H 'Content-type:application/json' -d '{"name": "Bug Catcher","team": [{"pokemonTypeId": 13, "level": 6},{"pokemonTypeId": 10, "level": 6}]}'
+    + curl -X PUT localhost:8081/trainers/Bug%20Catcher -H 'Content-type:application/json' -d '{"name": "Bug Catcher","team": [{"pokemonTypeId": 13, "level": 7},{"pokemonTypeId": 10, "level": 8}]}'
+    + curl -X DELETE localhost:8081/trainers/Bug%20Catcher
+
 - Sur heroku :
     + https://trainer-api-atr.herokuapp.com/
     + https://trainer-api-atr.herokuapp.com/trainers/

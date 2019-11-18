@@ -1,5 +1,6 @@
 package com.ifi.trainer_api.controller;
 
+import com.ifi.trainer_api.repository.Trainer;
 import com.ifi.trainer_api.service.TrainerService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -7,10 +8,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TrainerControllerTest {
@@ -73,4 +72,44 @@ public class TrainerControllerTest {
 
         assertNotNull(pathVariableAnnotation);
     }
+
+    @Test
+    void newTrainer_shouldBeAnnotated() throws NoSuchMethodException {
+        var newTrainer = TrainerController.class.getDeclaredMethod("newTrainer", Trainer.class);
+        var postMapping = newTrainer.getAnnotation(PostMapping.class);
+
+        assertNotNull(postMapping);
+        assertArrayEquals(new String[]{"/"}, postMapping.value());
+    }
+
+    @Test
+    void replaceTrainer_shouldBeAnnotated() throws NoSuchMethodException {
+        Class[] cArg = new Class[2];
+        cArg[0] = String.class;
+        cArg[1] = Trainer.class;
+        var replaceTrainer = TrainerController.class.getDeclaredMethod("replaceTrainer", cArg);
+        var putMapping = replaceTrainer.getAnnotation(PutMapping.class);
+
+        var pathVariableAnnotation = replaceTrainer.getParameters()[0].getAnnotation(PathVariable.class);
+
+        assertNotNull(putMapping);
+        assertArrayEquals(new String[]{"/{name}"}, putMapping.value());
+
+        assertNotNull(pathVariableAnnotation);
+    }
+
+    @Test
+    void deleteTrainer_shouldBeAnnotated() throws NoSuchMethodException {
+        var deleteTrainer =
+                TrainerController.class.getDeclaredMethod("deleteTrainer", String.class);
+        var deleteMapping = deleteTrainer.getAnnotation(DeleteMapping.class);
+
+        var pathVariableAnnotation = deleteTrainer.getParameters()[0].getAnnotation(PathVariable.class);
+
+        assertNotNull(deleteMapping);
+        assertArrayEquals(new String[]{"/{name}"}, deleteMapping.value());
+
+        assertNotNull(pathVariableAnnotation);
+    }
+
 }

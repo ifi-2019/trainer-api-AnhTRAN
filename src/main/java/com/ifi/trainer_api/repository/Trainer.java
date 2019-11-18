@@ -40,4 +40,9 @@ public class Trainer {
         if (o instanceof  Trainer) return ((Trainer) o);
         return null;
     }
+
+    public void replaceTrainer(Trainer trainer) {
+        this.name = trainer.getName();
+        this.team = trainer.getTeam();
+    }
 }

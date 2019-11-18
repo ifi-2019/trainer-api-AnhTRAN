@@ -29,4 +29,19 @@ public class TrainerServiceImpl implements TrainerService {
     public Trainer createTrainer(Trainer trainer) {
         return trainerRepository.save(trainer);
     }
+
+    @Override
+    public Trainer replaceTrainer(String trainerName, Trainer trainer) {
+        Trainer oldTrainer = trainerRepository.findById(trainerName).orElse(null);
+        if (oldTrainer != null) {
+            oldTrainer.replaceTrainer(trainer);
+            return trainerRepository.save(oldTrainer);
+        }
+        return null;
+    }
+
+    @Override
+    public void deleteTrainer(String name) {
+        trainerRepository.deleteById(name);
+    }
 }
