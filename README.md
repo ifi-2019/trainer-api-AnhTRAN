@@ -28,3 +28,6 @@ Dans config de tomcat : deployement -> application context : mettre /
     + http://localhost:8081/trainers/
      
     + http://localhost:8081/trainers/Ash
+
+- Sur heroku :
+    + https://trainer-api-anhtran.herokuapp.com/
