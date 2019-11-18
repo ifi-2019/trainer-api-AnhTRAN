@@ -25,9 +25,10 @@ Dans config de tomcat : deployement -> application context : mettre /
     > mvn spring-boot:run
 
 - Essayer les URLs suivants dans un navigateur (chrome, firefox, ...):
-    + http://localhost:8081/trainers/
-     
+    + http://localhost:8081/trainers/ 
     + http://localhost:8081/trainers/Ash
 
 - Sur heroku :
     + https://trainer-api-atr.herokuapp.com/
+    + https://trainer-api-atr.herokuapp.com/trainers/
+    + https://trainer-api-atr.herokuapp.com/trainers/Ash
