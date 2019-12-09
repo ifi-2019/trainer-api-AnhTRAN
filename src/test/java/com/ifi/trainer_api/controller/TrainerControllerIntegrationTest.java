@@ -2,16 +2,20 @@ package com.ifi.trainer_api.controller;
 
 import com.ifi.trainer_api.repository.Trainer;
 import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class TrainerControllerIntegrationTest {
 
@@ -24,14 +28,30 @@ class TrainerControllerIntegrationTest {
     @Autowired
     private TrainerController controller;
 
+    @Value("${spring.security.user.name}")
+    private String username;
+
+    @Value("${spring.security.user.password}")
+    private String password;
+
     @Test
     void trainerController_shouldBeInstanciated(){
         assertNotNull(controller);
     }
 
     @Test
+    void getTrainers_shouldThrowAnUnauthorized(){
+        var responseEntity = this.restTemplate
+                .getForEntity("http://localhost:" + port + "/trainers/Ash", Trainer.class);
+        assertNotNull(responseEntity);
+        assertEquals(401, responseEntity.getStatusCodeValue());
+    }
+
+    @Test
     void getTrainer_withNameAsh_shouldReturnAsh() {
-        var ash = this.restTemplate.getForObject("http://localhost:" + port + "/trainers/Ash", Trainer.class);
+        var ash = this.restTemplate
+                .withBasicAuth(username, password)
+                .getForObject("http://localhost:" + port + "/trainers/Ash", Trainer.class);
         assertNotNull(ash);
         assertEquals("Ash", ash.getName());
         assertEquals(1, ash.getTeam().size());
@@ -42,10 +62,10 @@ class TrainerControllerIntegrationTest {
 
     @Test
     void getAllTrainers_shouldReturnAshAndMisty() {
-        var trainers = this.restTemplate.getForObject("http://localhost:" + port + "/trainers/", Trainer[].class);
+        var trainers = this.restTemplate.withBasicAuth(username, password).getForObject("http://localhost:" + port + "/trainers/", Trainer[].class);
         assertNotNull(trainers);
 
-        var bugCatcher = this.restTemplate.getForObject("http://localhost:" + port + "/trainers/Bug Catcher", Trainer.class);
+        var bugCatcher = this.restTemplate.withBasicAuth(username, password).getForObject("http://localhost:" + port + "/trainers/Bug Catcher", Trainer.class);
         if (bugCatcher != null) {
             assertEquals(3, trainers.length);
             assertEquals("Ash", trainers[0].getName());
@@ -63,16 +83,16 @@ class TrainerControllerIntegrationTest {
 
     @Test
     void createTrainer_shouldReturnBugCatcher() {
-        var oldBugCatcher = this.restTemplate.getForObject("http://localhost:" + port + "/trainers/Bug Catcher", Trainer.class);
+        var oldBugCatcher = this.restTemplate.withBasicAuth(username, password).getForObject("http://localhost:" + port + "/trainers/Bug Catcher", Trainer.class);
         assertNull(oldBugCatcher);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         String requestJson = "{\"name\": \"Bug Catcher\",\"team\": [{\"pokemonTypeId\": 13, \"level\": 6},{\"pokemonTypeId\": 10, \"level\": 6}]}";
         HttpEntity<String> entity = new HttpEntity<String>(requestJson, headers);
-        var newTrainer = this.restTemplate.postForObject("http://localhost:" + port + "/trainers/", entity, Trainer.class);
+        var newTrainer = this.restTemplate.withBasicAuth(username, password).postForObject("http://localhost:" + port + "/trainers/", entity, Trainer.class);
 
-        var bugCatcher = this.restTemplate.getForObject("http://localhost:" + port + "/trainers/Bug Catcher", Trainer.class);
+        var bugCatcher = this.restTemplate.withBasicAuth(username, password).getForObject("http://localhost:" + port + "/trainers/Bug Catcher", Trainer.class);
         assertNotNull(bugCatcher);
         assertEquals("Bug Catcher", bugCatcher.getName());
         assertEquals(newTrainer.getName(), bugCatcher.getName());
@@ -92,9 +112,9 @@ class TrainerControllerIntegrationTest {
 
         String requestJson = "{\"name\": \"Bug Catcher\",\"team\": [{\"pokemonTypeId\": 13, \"level\": 6},{\"pokemonTypeId\": 10, \"level\": 6}]}";
         HttpEntity<String> entity = new HttpEntity<String>(requestJson, headers);
-        this.restTemplate.postForObject("http://localhost:" + port + "/trainers/", entity, Trainer.class);
+        this.restTemplate.withBasicAuth(username, password).postForObject("http://localhost:" + port + "/trainers/", entity, Trainer.class);
 
-        var oldBugCatcher = this.restTemplate.getForObject("http://localhost:" + port + "/trainers/Bug Catcher", Trainer.class);
+        var oldBugCatcher = this.restTemplate.withBasicAuth(username, password).getForObject("http://localhost:" + port + "/trainers/Bug Catcher", Trainer.class);
         assertNotNull(oldBugCatcher);
         assertEquals("Bug Catcher", oldBugCatcher.getName());
         assertEquals(2, oldBugCatcher.getTeam().size());
@@ -103,9 +123,9 @@ class TrainerControllerIntegrationTest {
 
         String requestJson2 = "{\"name\": \"Bug Catcher\",\"team\": [{\"pokemonTypeId\": 13, \"level\": 7},{\"pokemonTypeId\": 10, \"level\": 8}]}";
         HttpEntity<String> entity2 = new HttpEntity<String>(requestJson2, headers);
-        this.restTemplate.put("http://localhost:" + port + "/trainers/Bug Catcher", entity2, Trainer.class);
+        this.restTemplate.withBasicAuth(username, password).put("http://localhost:" + port + "/trainers/Bug Catcher", entity2, Trainer.class);
 
-        var newBugCatcher = this.restTemplate.getForObject("http://localhost:" + port + "/trainers/Bug Catcher", Trainer.class);
+        var newBugCatcher = this.restTemplate.withBasicAuth(username, password).getForObject("http://localhost:" + port + "/trainers/Bug Catcher", Trainer.class);
         assertNotNull(newBugCatcher);
         assertEquals("Bug Catcher", newBugCatcher.getName());
         assertEquals(2, newBugCatcher.getTeam().size());
@@ -120,15 +140,15 @@ class TrainerControllerIntegrationTest {
 
         String requestJson = "{\"name\": \"Bug Catcher\",\"team\": [{\"pokemonTypeId\": 13, \"level\": 6},{\"pokemonTypeId\": 10, \"level\": 6}]}";
         HttpEntity<String> entity = new HttpEntity<String>(requestJson, headers);
-        this.restTemplate.postForObject("http://localhost:" + port + "/trainers/", entity, Trainer.class);
+        this.restTemplate.withBasicAuth(username, password).postForObject("http://localhost:" + port + "/trainers/", entity, Trainer.class);
 
-        var oldBugCatcher = this.restTemplate.getForObject("http://localhost:" + port + "/trainers/Bug Catcher", Trainer.class);
+        var oldBugCatcher = this.restTemplate.withBasicAuth(username, password).getForObject("http://localhost:" + port + "/trainers/Bug Catcher", Trainer.class);
         assertNotNull(oldBugCatcher);
         assertEquals("Bug Catcher", oldBugCatcher.getName());
 
-        this.restTemplate.delete("http://localhost:" + port + "/trainers/Bug Catcher", Trainer.class);
+        this.restTemplate.withBasicAuth(username, password).delete("http://localhost:" + port + "/trainers/Bug Catcher", Trainer.class);
 
-        var bugCatcher = this.restTemplate.getForObject("http://localhost:" + port + "/trainers/Bug Catcher", Trainer.class);
+        var bugCatcher = this.restTemplate.withBasicAuth(username, password).getForObject("http://localhost:" + port + "/trainers/Bug Catcher", Trainer.class);
         assertNull(bugCatcher);
     }
 }

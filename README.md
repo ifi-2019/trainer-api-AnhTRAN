@@ -2,7 +2,8 @@
 
 ### Thi-Ngoc-Anh TRAN, M2-E-Service, Université de Lille
 
-https://juwit.github.io/ifi-2019/cours/04-jpa/04-tp-jpa.html#_d%C3%A9ploiement_chez_heroku
+- https://juwit.github.io/ifi-2019/cours/04-jpa/04-tp-jpa.html
+- https://juwit.github.io/ifi-2019/cours/06-security/06-tp-security.html
 
 #### 1. Configuration de Java 12 sur les postes de l’université
 Modifier le fichier ~/.bashrc pour y ajouter les lignes suivantes :
@@ -43,3 +44,28 @@ Dans config de tomcat : deployement -> application context : mettre /
     + curl -X POST https://trainer-api-atr.herokuapp.com/trainers/ -H 'Content-type:application/json' -d '{"name": "Bug Catcher","team": [{"pokemonTypeId": 13, "level": 6},{"pokemonTypeId": 10, "level": 6}]}'
     + curl -X PUT https://trainer-api-atr.herokuapp.com/trainers/Bug%20Catcher -H 'Content-type:application/json' -d '{"name": "Bug Catcher","team": [{"pokemonTypeId": 13, "level": 7},{"pokemonTypeId": 10, "level": 8}]}'
     + curl -X DELETE https://trainer-api-atr.herokuapp.com/trainers/Bug%20Catcher
+
+## 6. Attention the config when :
+- working local
+    -  uncomment in pom.xml
+        ```xml
+        <dependency>
+           <groupId>com.h2database</groupId>
+           <artifactId>h2</artifactId>
+        </dependency>
+        ```  
+     
+- working on server (heroku)
+    -  uncomment in pom.xml
+        ```xml
+        <dependency>
+            <groupId>org.postgresql</groupId>
+           <artifactId>postgresql</artifactId>
+        </dependency>
+        ```
+    - uncomment in application.properties
+        ```properties
+        spring.datasource.url=jdbc:postgresql://bxhvyoukcen7sn4j8lyj-postgresql.services.clever-cloud.com:5432/bxhvyoukcen7sn4j8lyj
+        spring.datasource.username=uqwlidutkgmgzqu71k10
+        spring.datasource.password=oXGVzrmn13eFYYZyspAu
+        ```
