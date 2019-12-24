@@ -29,11 +29,6 @@ Dans config de tomcat : deployement -> application context : mettre /
     + http://localhost:8081/trainers/ 
     + http://localhost:8081/trainers/Ash
 
-- Sur terminal, pour tester POST/PUT/DELETE : 
-    + curl -X POST localhost:8081/trainers/ -H 'Content-type:application/json' -d '{"name": "Bug Catcher","team": [{"pokemonTypeId": 13, "level": 6},{"pokemonTypeId": 10, "level": 6}]}' --user user:7fab308f-2310-4f7e-b5e3-ffcb3ff556c7
-    + curl -X PUT localhost:8081/trainers/Bug%20Catcher -H 'Content-type:application/json' -d '{"name": "Bug Catcher","team": [{"pokemonTypeId": 13, "level": 7},{"pokemonTypeId": 10, "level": 8}]}' --user user:7fab308f-2310-4f7e-b5e3-ffcb3ff556c7
-    + curl -X DELETE localhost:8081/trainers/Bug%20Catcher --user user:7fab308f-2310-4f7e-b5e3-ffcb3ff556c7
-
 ### 5. Heroku :
 - Essayer les URLs suivants dans un navigateur (chrome, firefox, ...)
     + https://trainer-api-atr.herokuapp.com/
@@ -41,9 +36,9 @@ Dans config de tomcat : deployement -> application context : mettre /
     + https://trainer-api-atr.herokuapp.com/trainers/Ash
     
 - Sur terminal, pour tester POST/PUT/DELETE :
-    + curl -X POST https://trainer-api-atr.herokuapp.com/trainers/ -H 'Content-type:application/json' -d '{"name": "Bug Catcher","team": [{"pokemonTypeId": 13, "level": 6},{"pokemonTypeId": 10, "level": 6}]}' --user user:7fab308f-2310-4f7e-b5e3-ffcb3ff556c7
-    + curl -X PUT https://trainer-api-atr.herokuapp.com/trainers/Bug%20Catcher -H 'Content-type:application/json' -d '{"name": "Bug Catcher","team": [{"pokemonTypeId": 13, "level": 7},{"pokemonTypeId": 10, "level": 8}]}' --user user:7fab308f-2310-4f7e-b5e3-ffcb3ff556c7
-    + curl -X DELETE https://trainer-api-atr.herokuapp.com/trainers/Bug%20Catcher --user user:7fab308f-2310-4f7e-b5e3-ffcb3ff556c7
+    + curl -X POST https://trainer-api-atr.herokuapp.com/trainers/ -H 'Content-type:application/json' -d '{"name": "Bug Catcher","team": [{"pokemonType": 13, "level": 6},{"pokemonType": 10, "level": 6}],"password":"$2a$10$ny1bjSowICze3PhqV0qTC.t6S11duLPIGY6G26ffxH706VzA0/Ynm"}' -u user:7fab308f-2310-4f7e-b5e3-ffcb3ff556c7
+    + curl -X PUT https://trainer-api-atr.herokuapp.com/trainers/Bug%20Catcher -H 'Content-type:application/json' -d '{"name": "Bug Catcher","team": [{"pokemonType": 13, "level": 7},{"pokemonType": 10, "level": 8}]}'  -u user:7fab308f-2310-4f7e-b5e3-ffcb3ff556c7
+    + curl -X DELETE https://trainer-api-atr.herokuapp.com/trainers/Bug%20Catcher  -u user:7fab308f-2310-4f7e-b5e3-ffcb3ff556c7
 
 ## 6. Attention the config when :
 - working local
