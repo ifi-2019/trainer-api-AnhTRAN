@@ -69,8 +69,13 @@ class TrainerControllerIntegrationTest {
         if (bugCatcher != null) {
             assertEquals(3, trainers.length);
             assertEquals("Ash", trainers[0].getName());
-            assertEquals("Bug Catcher", trainers[1].getName());
-            assertEquals("Misty", trainers[2].getName());
+            if (("Misty").equals(trainers[1].getName())) {
+                assertEquals("Bug Catcher", trainers[2].getName());
+                assertEquals("Misty", trainers[1].getName());
+            } else {
+                assertEquals("Bug Catcher", trainers[1].getName());
+                assertEquals("Misty", trainers[2].getName());
+            }
         }
         else {
             assertEquals(2, trainers.length);
@@ -88,7 +93,7 @@ class TrainerControllerIntegrationTest {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        String requestJson = "{\"name\": \"Bug Catcher\",\"team\": [{\"pokemonTypeId\": 13, \"level\": 6},{\"pokemonTypeId\": 10, \"level\": 6}]}";
+        String requestJson = "{\"name\": \"Bug Catcher\",\"team\": [{\"pokemonTypeId\": 12, \"level\": 6},{\"pokemonTypeId\": 10, \"level\": 6}]}";
         HttpEntity<String> entity = new HttpEntity<String>(requestJson, headers);
         var newTrainer = this.restTemplate.withBasicAuth(username, password).postForObject("http://localhost:" + port + "/trainers/", entity, Trainer.class);
 
@@ -110,7 +115,7 @@ class TrainerControllerIntegrationTest {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        String requestJson = "{\"name\": \"Bug Catcher\",\"team\": [{\"pokemonTypeId\": 13, \"level\": 6},{\"pokemonTypeId\": 10, \"level\": 6}]}";
+        String requestJson = "{\"name\": \"Bug Catcher\",\"team\": [{\"pokemonTypeId\": 12, \"level\": 6},{\"pokemonTypeId\": 10, \"level\": 6}]}";
         HttpEntity<String> entity = new HttpEntity<String>(requestJson, headers);
         this.restTemplate.withBasicAuth(username, password).postForObject("http://localhost:" + port + "/trainers/", entity, Trainer.class);
 
@@ -121,7 +126,7 @@ class TrainerControllerIntegrationTest {
         assertEquals(6, oldBugCatcher.getTeam().get(0).getLevel());
         assertEquals(6, oldBugCatcher.getTeam().get(1).getLevel());
 
-        String requestJson2 = "{\"name\": \"Bug Catcher\",\"team\": [{\"pokemonTypeId\": 13, \"level\": 7},{\"pokemonTypeId\": 10, \"level\": 8}]}";
+        String requestJson2 = "{\"name\": \"Bug Catcher\",\"team\": [{\"pokemonTypeId\": 12, \"level\": 7},{\"pokemonTypeId\": 10, \"level\": 8}]}";
         HttpEntity<String> entity2 = new HttpEntity<String>(requestJson2, headers);
         this.restTemplate.withBasicAuth(username, password).put("http://localhost:" + port + "/trainers/Bug Catcher", entity2, Trainer.class);
 
@@ -138,7 +143,7 @@ class TrainerControllerIntegrationTest {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        String requestJson = "{\"name\": \"Bug Catcher\",\"team\": [{\"pokemonTypeId\": 13, \"level\": 6},{\"pokemonTypeId\": 10, \"level\": 6}]}";
+        String requestJson = "{\"name\": \"Bug Catcher\",\"team\": [{\"pokemonTypeId\": 12, \"level\": 6},{\"pokemonTypeId\": 10, \"level\": 6}]}";
         HttpEntity<String> entity = new HttpEntity<String>(requestJson, headers);
         this.restTemplate.withBasicAuth(username, password).postForObject("http://localhost:" + port + "/trainers/", entity, Trainer.class);
 
